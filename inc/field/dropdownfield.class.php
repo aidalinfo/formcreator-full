@@ -355,6 +355,10 @@ class DropdownField extends PluginFormcreatorAbstractField
       $dparams = $this->buildParams($rand);
       $dparams['display'] = false;
 
+      if ($this->isEditDisabled()) {
+         $dparams['readonly'] = true;
+      }
+
       $idor_params = [];
       foreach (['condition', 'displaywith', 'entity_restrict', 'right'] as $sensitive_param) {
          if (array_key_exists($sensitive_param, $dparams)) {

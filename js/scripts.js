@@ -728,6 +728,29 @@ var plugin_formcreator = new function() {
       });
    };
 
+   this.toggleEditDisabled = function (target) {
+      var item = $(target).closest('.grid-stack-item');
+      var id = item.attr('data-id');
+      if (typeof(id) === 'undefined') {
+         return;
+      }
+      var editDisabled = $(target).hasClass('fa-lock');
+      jQuery.ajax({
+         url: formcreatorRootDoc + '/ajax/question_toggle_edit_disabled.php',
+         type: "POST",
+         data: {
+            id: id,
+            edit_disabled: editDisabled ? '0' : '1'
+         }
+      }).fail(function(data) {
+         alert(data.responseText);
+      }).done(function() {
+         $(target)
+            .removeClass('fa-edit fa-lock')
+            .addClass(editDisabled ? 'fa-edit' : 'fa-lock');
+      });
+   };
+
    this.plugin_formcreator_scrollToModal = function (modalWindow) {
    $('html, body').animate({
         scrollTop: $(modalWindow).closest('.ui-dialog').offset().top

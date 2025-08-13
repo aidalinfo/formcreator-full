@@ -73,11 +73,13 @@ class TextField extends PluginFormcreatorAbstractField
       $domId        = $fieldName . '_' . $rand;
       $defaultValue = Html::cleanInputText(__($this->value, $domain));
 
+      $readonlyAttr = $this->isEditDisabled() ? ['readonly' => 'readonly'] : [];
+
       $html .= Html::input($fieldName, [
          'type'  => 'text',
          'id'    => $domId,
          'value' => $defaultValue,
-      ]);
+      ] + $readonlyAttr);
       $html .= Html::scriptBlock("$(function() {
          pluginFormcreatorInitializeField('$fieldName', '$rand');
       });");
