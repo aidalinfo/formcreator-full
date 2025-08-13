@@ -78,7 +78,16 @@ if (isset($_REQUEST['id'])
       }
    }
 
-   $form->displayUserForm();
+   // Capture URL parameters starting with 'field_'
+   $urlValues = [];
+   foreach ($_REQUEST as $key => $value) {
+      if (strpos($key, 'field_') === 0) {
+         $fieldName = substr($key, 6); // Remove 'field_' prefix
+         $urlValues[$fieldName] = $value;
+      }
+   }
+   
+   $form->displayUserForm($urlValues);
 
    // If user was not authenticated, remove temporary user
    if (isset($_SESSION['formcreator_public'])) {
