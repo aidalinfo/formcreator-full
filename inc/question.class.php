@@ -298,7 +298,14 @@ PluginFormcreatorTranslatableInterface
          . " $hiddenAttribute"
          . ' >';
       $html .= '<div class="grid-stack-item-content form-group mb-3 ' . $required . '" id="form-group-field-' . $this->getID() . '">';
-      $html .= $field->show($domain, $canEdit);
+      
+      // Pass edit_disabled state to field
+      $actualCanEdit = $canEdit;
+      if ($canEdit && isset($this->fields['edit_disabled']) && $this->fields['edit_disabled']) {
+         $actualCanEdit = false;
+      }
+      
+      $html .= $field->show($domain, $actualCanEdit);
       $html .= '</div>';
       $html .= '</div>';
 

@@ -46,6 +46,15 @@
         }
     ) }}
 
+    {{ fields.dropdownYesNo(
+        'edit_disabled',
+        item.fields['edit_disabled'],
+        __('Edit disabled', 'formcreator'), {
+            label_class: 'col-xxl-4',
+            input_class: 'col-xxl-8',
+        }
+    ) }}
+
     {{ fields.nullField({
         label_class: 'col-xxl-4',
         input_class: 'col-xxl-8',
