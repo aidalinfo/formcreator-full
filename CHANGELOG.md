@@ -1,3 +1,28 @@
+## [2.13.11](https://github.com/pluginsGLPI/formcreator/compare/2.13.10...2.13.11) (2025-01-13)
+
+### Added
+- New `edit_disabled` field option for questions - allows disabling field editing while keeping it visible
+- URL parameter pre-filling functionality with comprehensive security validation
+
+### Security
+- **CRITICAL**: Fixed XSS vulnerabilities in URL parameter pre-filling feature
+  - Sanitized URL parameter validation with field name regex validation
+  - Implemented HTML tag stripping and malicious pattern detection
+  - Added type-specific field validation (email, integer, float, date)
+  - Fixed unsafe `Sanitizer::unsanitize()` usage in textarea fields
+  - Added HTML entity escaping for read-only field display
+  - Enhanced session security with URL prefill tracking
+
+### Fixed
+- Form fields now properly escape HTML entities in read-only display mode
+- Textarea fields no longer decode HTML entities unsafely
+- Email, date, datetime, and float fields now have XSS protection in read-only mode
+
+### Database Changes
+- Added `edit_disabled` column to `glpi_plugin_formcreator_questions` table (boolean, default: 0)
+
+---
+
 ## [2.13.10](https://github.com/pluginsGLPI/formcreator/compare/2.13.9...2.13.10) (2025-02-26)
 
 

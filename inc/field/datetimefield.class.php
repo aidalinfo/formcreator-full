@@ -65,7 +65,7 @@ class DatetimeField extends PluginFormcreatorAbstractField
 
    public function getRenderedHtml($domain, $canEdit = true): string {
       if (!$canEdit) {
-         return $this->value;
+         return \Glpi\Toolbox\Sanitizer::encodeHtmlSpecialChars($this->value);
       }
 
       $html = '';

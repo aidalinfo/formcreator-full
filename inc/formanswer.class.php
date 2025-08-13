@@ -1070,44 +1070,87 @@ class PluginFormcreatorFormAnswer extends CommonDBTM
       return $this->answers;
    }
 
-   /**
-    * Set initial answers from URL parameters
-    * Maps field names to question IDs and prepares the answers array
-    * 
-    * @param PluginFormcreatorForm $form The form to pre-fill
-    * @param array $urlValues Associative array with field names as keys
-    */
    public function setInitialAnswers(PluginFormcreatorForm $form, array $urlValues): void {
       if (empty($urlValues)) {
          return;
       }
       
-      // Get all questions from the form
       $question = new PluginFormcreatorQuestion();
       $questions = $question->getQuestionsFromForm($form->getID());
       
-      // Create a mapping of question names to IDs
       $nameToIdMap = [];
+      $questionTypes = [];
       foreach ($questions as $id => $q) {
-         // Remove HTML tags and decode entities for comparison
          $cleanName = html_entity_decode(strip_tags($q->fields['name']), ENT_QUOTES | ENT_HTML5);
          $nameToIdMap[$cleanName] = $id;
+         $questionTypes[$id] = $q->fields['fieldtype'];
       }
       
-      // Map URL values to form field format
       $this->answers = [];
       foreach ($urlValues as $fieldName => $value) {
-         // Try to find the question by name
          if (isset($nameToIdMap[$fieldName])) {
             $questionId = $nameToIdMap[$fieldName];
-            $this->answers['formcreator_field_' . $questionId] = $value;
+            $fieldType = $questionTypes[$questionId];
+            
+            $sanitizedValue = $this->validateAndSanitizeFieldValue($value, $fieldType);
+            
+            if ($sanitizedValue !== null) {
+               $this->answers['formcreator_field_' . $questionId] = $sanitizedValue;
+            }
          }
       }
       
-      // Store in session if needed
       if (!empty($this->answers)) {
          $_SESSION['formcreator']['data'] = $this->answers;
+         $_SESSION['formcreator']['url_prefilled'] = true;
+         $_SESSION['formcreator']['prefill_timestamp'] = time();
       }
+   }
+
+   private function validateAndSanitizeFieldValue($value, string $fieldType) {
+      if (is_array($value)) {
+         $sanitizedArray = [];
+         foreach ($value as $item) {
+            $sanitizedItem = $this->validateAndSanitizeFieldValue($item, $fieldType);
+            if ($sanitizedItem !== null) {
+               $sanitizedArray[] = $sanitizedItem;
+            }
+         }
+         return !empty($sanitizedArray) ? $sanitizedArray : null;
+      }
+      
+      if (!is_string($value)) {
+         return null;
+      }
+      
+      switch ($fieldType) {
+         case 'email':
+            if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+               return null;
+            }
+            break;
+            
+         case 'integer':
+            if (!ctype_digit(str_replace(['-', '+'], '', $value))) {
+               return null;
+            }
+            break;
+            
+         case 'float':
+            if (!is_numeric($value)) {
+               return null;
+            }
+            break;
+            
+         case 'date':
+         case 'datetime':
+            if (strtotime($value) === false) {
+               return null;
+            }
+            break;
+      }
+      
+      return \Glpi\Toolbox\Sanitizer::encodeHtmlSpecialChars($value);
    }
 
    /**

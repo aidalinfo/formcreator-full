@@ -54,7 +54,7 @@ class EmailField extends TextField
 
    public function getRenderedHtml($domain, $canEdit = true): string {
       if (!$canEdit) {
-         return $this->value;
+         return \Glpi\Toolbox\Sanitizer::encodeHtmlSpecialChars($this->value);
       }
       $html = '';
       $id           = $this->question->getID();

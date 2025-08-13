@@ -53,9 +53,10 @@ class PluginFormcreatorUpgradeTo2_13_11
     * @return void
     */
    public function addEditDisabledColumn() {
+      global $DB;
       $table = 'glpi_plugin_formcreator_questions';
       
-      if (!$this->migration->fieldExists($table, 'edit_disabled')) {
+      if (!$DB->fieldExists($table, 'edit_disabled')) {
          $this->migration->addField(
             $table,
             'edit_disabled',

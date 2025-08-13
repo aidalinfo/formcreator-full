@@ -215,9 +215,17 @@ class TextareaField extends TextField
    }
 
    public function deserializeValue($value) {
-      $this->value = ($value !== null && $value !== '')
-         ? Sanitizer::unsanitize($value)
-         : '';
+      $isUrlPrefilled = isset($_SESSION['formcreator']['url_prefilled']) && $_SESSION['formcreator']['url_prefilled'];
+      
+      if ($value !== null && $value !== '') {
+         if (!$isUrlPrefilled) {
+            $this->value = \Glpi\Toolbox\Sanitizer::encodeHtmlSpecialChars($value);
+         } else {
+            $this->value = $value;
+         }
+      } else {
+         $this->value = '';
+      }
    }
 
    public function getValueForDesign(): string {

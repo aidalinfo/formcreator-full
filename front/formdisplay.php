@@ -82,8 +82,40 @@ if (isset($_REQUEST['id'])
    $urlValues = [];
    foreach ($_REQUEST as $key => $value) {
       if (strpos($key, 'field_') === 0) {
-         $fieldName = substr($key, 6); // Remove 'field_' prefix
-         $urlValues[$fieldName] = $value;
+         $fieldName = substr($key, 6);
+         
+         if (!preg_match('/^[a-zA-Z0-9_\-\s]{1,255}$/', $fieldName)) {
+            continue;
+         }
+         
+         if (is_string($value)) {
+            $value = strip_tags($value);
+            $value = trim($value);
+            
+            if (strlen($value) > 10000) {
+               $value = substr($value, 0, 10000);
+            }
+            
+            if (preg_match('/(javascript:|on\w+\s*=|<script|<\/script)/i', $value)) {
+               continue;
+            }
+            
+            $urlValues[$fieldName] = $value;
+         } else if (is_array($value)) {
+            $sanitizedArray = [];
+            foreach ($value as $arrayItem) {
+               if (is_string($arrayItem)) {
+                  $arrayItem = strip_tags($arrayItem);
+                  $arrayItem = trim($arrayItem);
+                  if (strlen($arrayItem) <= 1000 && !preg_match('/(javascript:|on\w+\s*=|<script|<\/script)/i', $arrayItem)) {
+                     $sanitizedArray[] = $arrayItem;
+                  }
+               }
+            }
+            if (!empty($sanitizedArray)) {
+               $urlValues[$fieldName] = $sanitizedArray;
+            }
+         }
       }
    }
    
