@@ -1045,7 +1045,7 @@ PluginFormcreatorTranslatableInterface
     *
     * @return void
     */
-   public function displayUserForm() : void {
+   public function displayUserForm($urlValues = []) : void {
       global $TRANSLATE;
 
       // Print css media
@@ -1060,6 +1060,12 @@ PluginFormcreatorTranslatableInterface
       }
 
       $formanswer = new PluginFormcreatorFormAnswer();
+      
+      // If URL values are provided, prepare them for the form
+      if (!empty($urlValues)) {
+         $formanswer->setInitialAnswers($this, $urlValues);
+      }
+
       TemplateRenderer::getInstance()->display('@formcreator/pages/userform.html.twig', [
          'item'    => $this,
          'options' => [

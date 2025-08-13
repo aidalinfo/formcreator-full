@@ -1071,6 +1071,46 @@ class PluginFormcreatorFormAnswer extends CommonDBTM
    }
 
    /**
+    * Set initial answers from URL parameters
+    * Maps field names to question IDs and prepares the answers array
+    * 
+    * @param PluginFormcreatorForm $form The form to pre-fill
+    * @param array $urlValues Associative array with field names as keys
+    */
+   public function setInitialAnswers(PluginFormcreatorForm $form, array $urlValues): void {
+      if (empty($urlValues)) {
+         return;
+      }
+      
+      // Get all questions from the form
+      $question = new PluginFormcreatorQuestion();
+      $questions = $question->getQuestionsFromForm($form->getID());
+      
+      // Create a mapping of question names to IDs
+      $nameToIdMap = [];
+      foreach ($questions as $id => $q) {
+         // Remove HTML tags and decode entities for comparison
+         $cleanName = html_entity_decode(strip_tags($q->fields['name']), ENT_QUOTES | ENT_HTML5);
+         $nameToIdMap[$cleanName] = $id;
+      }
+      
+      // Map URL values to form field format
+      $this->answers = [];
+      foreach ($urlValues as $fieldName => $value) {
+         // Try to find the question by name
+         if (isset($nameToIdMap[$fieldName])) {
+            $questionId = $nameToIdMap[$fieldName];
+            $this->answers['formcreator_field_' . $questionId] = $value;
+         }
+      }
+      
+      // Store in session if needed
+      if (!empty($this->answers)) {
+         $_SESSION['formcreator']['data'] = $this->answers;
+      }
+   }
+
+   /**
     * Gets the associated form
     * @param int $formId : specify the form to return. If null, find the form from the FK
     *
