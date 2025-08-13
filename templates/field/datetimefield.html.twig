@@ -48,6 +48,15 @@
         }
     ) }}
 
+    {{ fields.dropdownYesNo(
+        'edit_disabled',
+        item.fields['edit_disabled'],
+        __('Edit disabled', 'formcreator'), {
+            label_class: 'col-xxl-4',
+            input_class: 'col-xxl-8',
+        }
+    ) }}
+
     {# May be empty has no meaning as required makes mandatory to have at lease 1 checkbox ticked #}
      {{ fields.nullField({
         label_class: 'col-xxl-4',
