@@ -181,6 +181,10 @@ abstract class PluginFormcreatorAbstractField implements PluginFormcreatorFieldI
       return ($this->question->fields['required'] != '0');
    }
 
+   public function isEditDisabled(): bool {
+      return ($this->question->fields['edit_disabled'] != '0');
+   }
+
    /**
     * trim and explode values separated by \r\n
     * @param string $value a value or default value

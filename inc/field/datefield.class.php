@@ -50,11 +50,17 @@ class DateField extends DatetimeField
       $rand      = mt_rand();
       $fieldName = 'formcreator_field_' . $id;
 
-      $html .= Html::showDateField($fieldName, [
+      $dateOptions = [
          'value'   => (strtotime($this->value) != '') ? $this->value : '',
          'rand'    => $rand,
          'display' => false,
-      ]);
+      ];
+
+      if ($this->isEditDisabled()) {
+         $dateOptions['readonly'] = true;
+      }
+
+      $html .= Html::showDateField($fieldName, $dateOptions);
       $html .= Html::scriptBlock("$(function() {
          pluginFormcreatorInitializeDate('$fieldName', '$rand');
       });");

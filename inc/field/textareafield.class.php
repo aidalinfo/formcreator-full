@@ -153,7 +153,8 @@ class TextareaField extends TextField
       $defaultValue = Sanitizer::unsanitize(__(Sanitizer::sanitize($this->value), $domain));
       $html = '';
       $form = PluginFormcreatorForm::getByItem($this->getQuestion());
-      $html .= Html::textarea([
+      
+      $textareaOptions = [
          'name'              => $fieldName,
          'editor_id'         => "$fieldName$rand",
          'rand'              => $rand,
@@ -164,7 +165,13 @@ class TextareaField extends TextField
          'enable_images'     => !$form->isPublicAccess(),
          'enable_fileupload' => false,
          'uploads'           => $this->uploads,
-      ]);
+      ];
+      
+      if ($this->isEditDisabled()) {
+         $textareaOptions['readonly'] = true;
+      }
+      
+      $html .= Html::textarea($textareaOptions);
       $html .= Html::scriptBlock("$(function() {
          pluginFormcreatorInitializeTextarea('$fieldName', '$rand');
       });");

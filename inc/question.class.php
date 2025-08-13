@@ -258,6 +258,14 @@ PluginFormcreatorTranslatableInterface
       }
       $html .= "</span>";
 
+      // Toggle edit disabled for the question
+      $html .= "<span class='form_control pointer'>";
+      $editDisabled = ($this->fields['edit_disabled'] == '0') ? 'far fa-edit' : 'fas fa-lock';
+      $html .= '<i class="' . $editDisabled .'"
+               onclick="plugin_formcreator.toggleEditDisabled(this)"
+               title="' . __('Edit disabled', 'formcreator') . '"></i> ';
+      $html .= "</span>";
+
       $html .= '</div>'; // grid stack item content
 
       $html .= '</div>'; // grid stack item
@@ -572,6 +580,23 @@ PluginFormcreatorTranslatableInterface
       $success = $this->update([
          'id'           => $this->getID(),
          'required'     => $isRequired,
+      ]);
+      $this->skipChecks = false;
+
+      return $success;
+   }
+
+   /**
+    * set or reset the edit_disabled flag
+    *
+    * @param bool $isEditDisabled
+    * @return bool true if success, false otherwise
+    */
+   public function setEditDisabled($isEditDisabled): bool {
+      $this->skipChecks = true;
+      $success = $this->update([
+         'id'           => $this->getID(),
+         'edit_disabled' => $isEditDisabled,
       ]);
       $this->skipChecks = false;
 
